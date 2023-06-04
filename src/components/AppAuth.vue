@@ -81,8 +81,15 @@
               Submit
             </button>
           </form>
-          <!-- Registration Form -->
 
+          <!-- Registration Form -->
+          <div
+            class="text-white text-center font-bold p-4 rounded mb-4"
+            v-if="regShowAlert"
+            :class="regAlertVariant"
+          >
+            {{ regAlertMsg }}
+          </div>
           <vee-form
             v-show="tab === 'register'"
             :validation-schema="schema"
@@ -126,6 +133,7 @@
               <label class="inline-block mb-2">Password</label>
               <vee-field type="password" name="password" :bails="false" v-slot="{ field, errors }">
                 <input
+                  type="password"
                   class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
                   placeholder="Password"
                   v-bind="field"
@@ -175,6 +183,7 @@
             <button
               type="submit"
               class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
+              :disabled="regInSubmission"
             >
               Submit
             </button>
@@ -199,13 +208,17 @@ export default {
         email: 'required|min:3|max:100|email',
         age: 'required|min_value:18|max_value:100',
         password: 'required|min:9|max:100|excluded:password',
-        confirm_password: 'confirmed:@password',
-        country: 'required|excluded:Antarctica',
-        tos: 'required'
+        confirm_password: 'passwords_mismatch:@password',
+        country: 'required|country_excluded:Antarctica',
+        tos: 'tos'
       },
       userData: {
         country: 'USA'
-      }
+      },
+      regInSubmission: false,
+      regShowAlert: false,
+      regAlertVariant: 'bg-blue-500',
+      regAlertMsg: 'Please wait! Your account is being created.'
     }
   },
   computed: {
@@ -214,6 +227,14 @@ export default {
   },
   methods: {
     register(values) {
+      this.regInSubmission = true
+      this.regShowAlert = true
+      this.regAlertVariant = 'bg-blue-500'
+      this.regAlertMsg = 'Please wait! Your account is being created.'
+
+      this.regAlertVariant = 'bg-green-500'
+      this.regAlertMsg = 'Success! Your account has been created.'
+
       console.log(values)
     }
   }

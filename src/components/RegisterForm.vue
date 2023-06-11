@@ -103,7 +103,9 @@
 </template>
 
 <script>
-import { auth } from '@/includes/firebase'
+import { auth, usersCollection } from '@/includes/firebase'
+import { mapWritableState } from 'pinia'
+import useUserStore from '@/stores/user'
 
 export default {
   name: 'RegisterForm',
@@ -127,6 +129,9 @@ export default {
       regAlertMsg: 'Please wait! Your account is being created.'
     }
   },
+  computed: {
+    ...mapWritableState(useUserStore, ['userLoggedIn'])
+  },
   methods: {
     async register(values) {
       this.regInSubmission = true
@@ -144,17 +149,21 @@ export default {
         return
       }
 
-      // .catch(function(error) {
-      //   // Handle Errors here.
-      //   var errorCode = error.code;
-      //   var errorMessage = error.message;
-      //   if (errorCode == 'auth/weak-password') {
-      //     alert('The password is too weak.');
-      //   } else {
-      //     alert(errorMessage);
-      //   }
-      //   console.log(error);
-      // });
+      try {
+        await usersCollection.add({
+          name: values.name,
+          email: values.email,
+          age: values.age,
+          country: values.country
+        })
+      } catch (error) {
+        this.regInSubmission = false
+        this.regAlertVariant = 'bg-red-500'
+        this.regAlertMsg = 'An unexpected error occurred. Please try again later.'
+        return
+      }
+
+      this.userLoggedIn = true
 
       this.regAlertVariant = 'bg-green-500'
       this.regAlertMsg = 'Success! Your account has been created.'

@@ -103,6 +103,8 @@
 </template>
 
 <script>
+import { auth } from '@/includes/firebase'
+
 export default {
   name: 'RegisterForm',
   data() {
@@ -126,16 +128,38 @@ export default {
     }
   },
   methods: {
-    register(values) {
+    async register(values) {
       this.regInSubmission = true
       this.regShowAlert = true
       this.regAlertVariant = 'bg-blue-500'
       this.regAlertMsg = 'Please wait! Your account is being created.'
 
+      let userCred = null
+      try {
+        userCred = await auth.createUserWithEmailAndPassword(values.email, values.password)
+      } catch (error) {
+        this.regInSubmission = false
+        this.regAlertVariant = 'bg-red-500'
+        this.regAlertMsg = 'An unexpected error occurred. Please try again later.'
+        return
+      }
+
+      // .catch(function(error) {
+      //   // Handle Errors here.
+      //   var errorCode = error.code;
+      //   var errorMessage = error.message;
+      //   if (errorCode == 'auth/weak-password') {
+      //     alert('The password is too weak.');
+      //   } else {
+      //     alert(errorMessage);
+      //   }
+      //   console.log(error);
+      // });
+
       this.regAlertVariant = 'bg-green-500'
       this.regAlertMsg = 'Success! Your account has been created.'
 
-      console.log(values)
+      console.log(userCred)
     }
   }
 }

@@ -147,6 +147,7 @@ export default {
 
       this.regAlertVariant = 'bg-green-500'
       this.regAlertMsg = 'Success! Your account has been created.'
+      window.location.reload()
     }
   }
 }

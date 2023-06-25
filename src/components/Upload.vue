@@ -19,6 +19,7 @@
       >
         <h5>Drop your files here</h5>
       </div>
+      <input type="file" multiple @change="upload" />
       <hr class="my-6" />
       <!-- Progress Bars -->
       <div class="mb-4" v-for="upload in uploads" :key="upload.name">
@@ -41,7 +42,7 @@
 </template>
 
 <script>
-import { storage } from '@/includes/firebase'
+import { storage, auth, songsCollection } from '@/includes/firebase'
 
 export default {
   name: 'Upload',
@@ -58,7 +59,7 @@ export default {
     upload(event) {
       this.isDragover = false
 
-      const files = [...event.dataTransfer.files]
+      const files = event.dataTransfer ? [...event.dataTransfer.files] : [...event.target.files]
 
       files.forEach((file) => {
         if (file.type !== 'audio/mpeg') {
@@ -91,7 +92,19 @@ export default {
             this.uploads[uploadIndex].textClass = 'text-red-400'
             console.log(error)
           },
-          () => {
+          async () => {
+            const song = {
+              uid: auth.currentUser.uid,
+              display_name: auth.currentUser.displayName,
+              original_name: task.snapshot.ref.name,
+              modified_name: task.snapshot.ref.name,
+              genre: '',
+              comment_count: 0
+            }
+
+            song.url = await task.snapshot.ref.getDownloadURL()
+            await songsCollection.add(song)
+
             this.uploads[uploadIndex].variant = 'bg-green-400 !animate-none'
             this.uploads[uploadIndex].icon = 'fas fa-check'
             this.uploads[uploadIndex].textClass = 'text-green-400'

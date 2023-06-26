@@ -52,6 +52,11 @@ export default {
       uploads: []
     }
   },
+  beforeUnmount() {
+    this.uploads.forEach((upload) => {
+      upload.task.cancel()
+    })
+  },
   methods: {
     drop(e) {
       console.log(e)

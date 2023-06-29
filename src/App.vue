@@ -55,7 +55,6 @@ export default {
   },
   created() {
     if (auth.currentUser) {
-      console.log(auth.currentUser.age)
       this.userLoggedIn = true
     }
   }

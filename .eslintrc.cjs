@@ -37,5 +37,6 @@ module.exports = {
   },
   rules: {
     'vue/multi-word-component-names': 'off',
+    'cypress/no-unnecessary-waiting': 'off'
   }
 }
